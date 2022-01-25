@@ -171,6 +171,10 @@
             data.parameters = Vector4.Zero; // Tip: set yzw to something (focus plane for dof, perhaps radius and strength for ssao, etc.)
             data.parameters.X = time;
 
+            data.parameters.Y = 1;//ACTIVACION
+            data.parameters.Z = 1;//INTENSIDAD
+            data.parameters.W = 10f;
+
             deviceContext.UpdateSubresource( ref data, constantBuffer );
 
             deviceContext.VertexShader.SetConstantBuffer( 0, constantBuffer );
