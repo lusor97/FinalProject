@@ -330,7 +330,8 @@
             float origin = -( step * CubeCount ) / 2.0f;
             float x = origin + step * i;
             float y = origin + step * j;
-            Matrix worldMatrix = Matrix.Translation( x, y, 0.0f );
+            float z = (float)Math.Sin((float)Math.Sqrt(x * x + y * y) + time);
+            Matrix worldMatrix = Matrix.Translation( x, y, z );
 
             var cameraPosition = new Vector3( 90.0f, -90.0f, -90.0f);
             var cameraTarget = Vector3.Zero;
