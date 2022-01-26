@@ -338,7 +338,7 @@
             var cameraUp = -Vector3.UnitZ;
             var viewMatrix = Matrix.LookAtLH( 0.75f * cameraPosition, cameraTarget, cameraUp );
 
-            Matrix projectionMatrix = Matrix.PerspectiveFovLH( 2.0f * (float) PI * Remap( 0.0f, 360.0f, 45.0f ), aspectRatio, 0.01f, 1000.0f );
+            Matrix projectionMatrix = Matrix.PerspectiveFovLH( 2.0f * (float) PI * Remap( 0.0f, 360.0f, 45.0f ), aspectRatio, 1f, 1000.0f );//near y far
 
             data.worldMatrix = worldMatrix;
             data.viewProjectionMatrix = viewMatrix * projectionMatrix;

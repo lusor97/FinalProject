@@ -12,7 +12,6 @@ SamplerState samplerState : register( s0 );
 static const int offsetCount = 24;
 static const float2 offsets[] =
 {
-    {  0.0000,  0.0000 },
     { -0.2828, -0.2828 },
     { -0.0000, -0.4000 },
     {  0.2828, -0.2828 },
@@ -56,29 +55,34 @@ float3 main( OutputVS input ) : SV_TARGET
     float currentDepth; //depth of pixel
     float visibility; //checks depth regarding its surroundings
 
-	//return sceneTexture.Sample( samplerState, input.texcoord ).rgb;
 
     //apply ambient occlusion if true
     if (isActive != 0.0f)
     {
         for (int i = 0; i < offsetCount; ++i)
         {
+            color += sceneTexture.Sample(samplerState, input.texcoord + PixelSize * offsets[i]).rgb;
+        }
+        /*for (int i = 0; i < offsetCount; ++i)
+        {
             //get the pixel neightbors in the iteration and its depth
             for (int j = -10; j < 10; j++)
             {
                 for (int k = -10; k < 10; k++)
                 {
-                    float chechDepth = depthTexture.Sample(samplerState, input.texcoord + PixelSize * float2(j, k)).r;
+                    //float chechDepth = depthTexture.Sample(samplerState, input.texcoord + PixelSize * float2(j, k)).r;
 
-                    if (Abs(depth - chechDepth) < depthRange)
+                    if (abs(depth - chechDepth) < depthRange)
                     {
                         color += sceneTexture.Sample(samplerState, input.texcoord + PixelSize * float2(j, k)).rgb;
                     }
                 }
             }
-            color /= 100;
-        }
+        }*/
+
+        color /= 25;
     }
+
 
     return color;
 }
