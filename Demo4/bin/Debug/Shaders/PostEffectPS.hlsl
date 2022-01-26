@@ -3,7 +3,6 @@
 
 static const float2 RenderTargetSize = float2( 1280.0, 720.0 );
 static const float2 PixelSize = 1.0 / RenderTargetSize; // Size of a pixel in texcoords (UV coordinates)
-static const float depthRange = 1;
 
 Texture2D sceneTexture : register( t0 );
 Texture2D depthTexture : register( t1 );
@@ -41,48 +40,50 @@ static const float2 offsets[] =
 
 float3 main( OutputVS input ) : SV_TARGET
 {
-    //read texture and return its color and depth
-    float3 color = sceneTexture.Sample(samplerState, input.texcoord).rgb; //input.textcoord is current pixel being processed
+    //read pixel and return its color and depth
+    float3 color = sceneTexture.Sample(samplerState, input.texcoord).rgb;
     float currentPixelDepth = depthTexture.Sample(samplerState, input.texcoord).r;
 
     //DoF YZW
-    float isActive = parameters.y;
-    float intensity = parameters.z; //?????
+    float isFixed = parameters.y;
+    float isVariable = parameters.z;
     float depth = parameters.w;
 
-    float DoF = 1.0f; //init
-    float2 currentPos; //current pixel position from center
-    float currentDepth; //depth of pixel
-    float visibility; //checks depth regarding its surroundings
+    //variables
+    float near = 1;
+    float far = 1000;
+    float depthRange = 3.0f;
 
-
-    //apply ambient occlusion if true
-    if (isActive != 0.0f)
+    //apply DoF Fixed
+    if (isFixed != 0.0f)
     {
         for (int i = 0; i < offsetCount; ++i)
         {
-            color += sceneTexture.Sample(samplerState, input.texcoord + PixelSize * offsets[i]).rgb;
+            color += sceneTexture.Sample(samplerState, input.texcoord + PixelSize * (offsets[i] * 5)).rgb;
         }
-        /*for (int i = 0; i < offsetCount; ++i)
-        {
-            //get the pixel neightbors in the iteration and its depth
-            for (int j = -10; j < 10; j++)
-            {
-                for (int k = -10; k < 10; k++)
-                {
-                    //float chechDepth = depthTexture.Sample(samplerState, input.texcoord + PixelSize * float2(j, k)).r;
-
-                    if (abs(depth - chechDepth) < depthRange)
-                    {
-                        color += sceneTexture.Sample(samplerState, input.texcoord + PixelSize * float2(j, k)).rgb;
-                    }
-                }
-            }
-        }*/
 
         color /= 25;
     }
+    //apply DoF Variable
+    if (isVariable != 0.0f)
+    {
+        float normalizedDepth = ((near * far) / (far - currentPixelDepth * far + near * currentPixelDepth));
 
+        if (abs(depth - normalizedDepth) > depthRange)
+        {
+            [unroll]
+            for (int i = 0; i < offsetCount; ++i)
+            {
+                float intensity = (abs(depth - normalizedDepth) - depthRange) * 0.3f;
+                if (intensity > 5)
+                {
+                    intensity = 5;
+                }
+                color += sceneTexture.Sample(samplerState, input.texcoord + PixelSize * (offsets[i] * intensity)).rgb;
+            }
 
+            color /= 25;
+        }
+    }
     return color;
 }

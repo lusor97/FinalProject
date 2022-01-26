@@ -32,6 +32,10 @@
 
         private D3D11.SamplerState samplerState;
 
+        public float activateFixed = 0.0f;
+        public float activateVariable = 0.0f;
+        public float depth = 100.0f;
+
         Vector3[] vertexPositions = new Vector3[]
         {
             new Vector3( -1.0f, 1.0f, 0.0f ), new Vector3(  1.0f,  1.0f, 0.0f ), new Vector3( -1.0f, -1.0f, 0.0f ),
@@ -171,9 +175,9 @@
             data.parameters = Vector4.Zero; // Tip: set yzw to something (focus plane for dof, perhaps radius and strength for ssao, etc.)
             data.parameters.X = time;
 
-            data.parameters.Y = 1;//ACTIVACION
-            data.parameters.Z = 1;//INTENSIDAD
-            data.parameters.W = 10f;
+            data.parameters.Y = activateFixed;//ACTIVACION FIXED
+            data.parameters.Z = activateVariable;//ACTIVATION VARIABLE
+            data.parameters.W = depth;//DEPTH 1-1000
 
             deviceContext.UpdateSubresource( ref data, constantBuffer );
 

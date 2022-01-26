@@ -14,10 +14,10 @@
 
     public class Program : IDisposable
     {
-        private const string Title = "Demo4";
+        private const string Title = "DoF OFF";
 
-        private const int Width = 1280;
-        private const int Height = 720;
+        private const int Width = 1280 *2;
+        private const int Height = 720 *2;
 
         private RenderForm renderForm;
         private DXGI.SwapChain swapChain;
@@ -80,6 +80,14 @@
         private void SetTitle()
         {
             renderForm.Text = Title;
+            if (renderer.PostEffect.activateFixed == 1.0f)
+            {
+                renderForm.Text = "DoF FIXED: ";
+            }
+            if (renderer.PostEffect.activateVariable == 1.0f)
+            {
+                renderForm.Text = "DoF Variable: Depth -> " + renderer.PostEffect.depth.ToString();
+            }
         }
 
         public void Dispose()
@@ -96,6 +104,35 @@
         {
             if ( key == Keys.Escape )
                 renderForm.Dispose();
+
+            if (key == Keys.F) //DoF ACTIVATION Fixed
+            {
+                renderer.PostEffect.activateFixed += 1.0f % 2;
+                renderer.PostEffect.activateVariable = 0.0f;
+            }
+
+            if (key == Keys.V) //DoF ACTIVATION Variable
+            {
+                renderer.PostEffect.activateFixed = 0.0f;
+                renderer.PostEffect.activateVariable += 1.0f % 2;
+            }
+
+            if (key == Keys.Space) //DoF DEACTIVATE
+            {
+                renderer.PostEffect.activateFixed = 0.0f;
+                renderer.PostEffect.activateVariable = 0.0f;
+                renderer.PostEffect.depth = 100.0f;
+            }
+
+            if (key == Keys.Up) //DoF +DEPTH
+            {
+                renderer.PostEffect.depth += 1.0f;
+            }
+
+            if (key == Keys.Down) //DoF -DEPTH
+            {
+                renderer.PostEffect.depth -= 1.0f;
+            }
 
             SetTitle();
         }

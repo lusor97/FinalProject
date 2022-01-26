@@ -330,7 +330,7 @@
             float origin = -( step * CubeCount ) / 2.0f;
             float x = origin + step * i;
             float y = origin + step * j;
-            float z = (float)Math.Sin((float)Math.Sqrt(x * x + y * y) + time);
+            float z = (float)Math.Sin((float)Math.Sqrt(x * x + y * y) + time * 0.5) * 1.2f;
             Matrix worldMatrix = Matrix.Translation( x, y, z );
 
             var cameraPosition = new Vector3( 90.0f, -90.0f, -90.0f);
@@ -338,7 +338,7 @@
             var cameraUp = -Vector3.UnitZ;
             var viewMatrix = Matrix.LookAtLH( 0.75f * cameraPosition, cameraTarget, cameraUp );
 
-            Matrix projectionMatrix = Matrix.PerspectiveFovLH( 2.0f * (float) PI * Remap( 0.0f, 360.0f, 45.0f ), aspectRatio, 1f, 1000.0f );//near y far
+            Matrix projectionMatrix = Matrix.PerspectiveFovLH( 2.0f * (float) PI * Remap( 0.0f, 360.0f, 45.0f ), aspectRatio, 1.0f, 1000.0f );//near y far
 
             data.worldMatrix = worldMatrix;
             data.viewProjectionMatrix = viewMatrix * projectionMatrix;
@@ -356,6 +356,12 @@
 
             deviceContext.VertexShader.SetConstantBuffer( 0, constantBuffer );
             deviceContext.PixelShader.SetConstantBuffer( 0, constantBuffer );
+        }
+
+        public PostEffect PostEffect
+        {
+            get { return postEffect; }
+            set { postEffect = value; }
         }
     }
 }
